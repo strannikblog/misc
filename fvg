@@ -14,6 +14,8 @@ mitigationLevels = input.bool(false, 'Mitigation Levels')
 
 tf = input.timeframe('', "Timeframe")
 
+lookbackPeriod = input.int(0, "Lookback Period (Bars)", minval = 0, tooltip = "Number of bars to look back for FVG detection. 0 = All history")
+
 //Style
 extend = input.int(20, 'Extend', minval = 0, inline = 'extend', group = 'Style')
 dynamic = input(false, 'Dynamic', inline = 'extend', group = 'Style')
@@ -68,8 +70,11 @@ var fvg_areas = array.new<box>(0)
 
 [bull_fvg, bear_fvg, new_fvg] = request.security(syminfo.tickerid, tf, detect())
 
+//Check if within lookback period
+withinLookback = lookbackPeriod == 0 or bar_index >= (last_bar_index - lookbackPeriod)
+
 //Bull FVG's
-if bull_fvg and new_fvg.t != t
+if bull_fvg and new_fvg.t != t and withinLookback
     if dynamic
         max_bull_fvg := new_fvg.max
         min_bull_fvg := new_fvg.min
@@ -85,7 +90,7 @@ else if dynamic
     max_bull_fvg := math.max(math.min(close, max_bull_fvg), min_bull_fvg)
 
 //Bear FVG's
-if bear_fvg and new_fvg.t != t
+if bear_fvg and new_fvg.t != t and withinLookback
     if dynamic
         max_bear_fvg := new_fvg.max
         min_bear_fvg := new_fvg.min
