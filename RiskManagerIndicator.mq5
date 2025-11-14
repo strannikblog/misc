@@ -377,31 +377,31 @@ void CreateDisplay() {
             panelY = inpLabelY;
             textOffsetX = inpLabelX + 10;
             buttonX = inpLabelX;
-            buttonY = inpLabelY + ((g_state.needTier1Recovery || g_state.needTier2Recovery) ? 160 : 145);
+            buttonY = inpLabelY + panelHeight + 5;
             break;
 
         case CORNER_LEFT_LOWER:
             panelX = inpLabelX;
-            panelY = inpLabelY + panelHeight;  // Offset upward for bottom corner
+            panelY = inpLabelY;
             textOffsetX = inpLabelX + 10;
             buttonX = inpLabelX;
-            buttonY = inpLabelY + 25;  // Button appears below panel
+            buttonY = inpLabelY + panelHeight + 5;
             break;
 
         case CORNER_RIGHT_UPPER:
-            panelX = inpLabelX + 200;  // Offset leftward for right corner (panel width is 200)
+            panelX = inpLabelX;
             panelY = inpLabelY;
-            textOffsetX = inpLabelX + 10;  // Text is relative to panel left edge
-            buttonX = inpLabelX + 200;
-            buttonY = inpLabelY + ((g_state.needTier1Recovery || g_state.needTier2Recovery) ? 160 : 145);
+            textOffsetX = inpLabelX + 190;  // 200px panel width - 10px padding from left edge = 190px from right
+            buttonX = inpLabelX;
+            buttonY = inpLabelY + panelHeight + 5;
             break;
 
         case CORNER_RIGHT_LOWER:
-            panelX = inpLabelX + 200;  // Offset leftward for right corner
-            panelY = inpLabelY + panelHeight;  // Offset upward for bottom corner
-            textOffsetX = inpLabelX + 10;
-            buttonX = inpLabelX + 200;
-            buttonY = inpLabelY + 25;  // Button appears below panel
+            panelX = inpLabelX;
+            panelY = inpLabelY;
+            textOffsetX = inpLabelX + 190;  // 200px panel width - 10px padding from left edge = 190px from right
+            buttonX = inpLabelX;
+            buttonY = inpLabelY + panelHeight + 5;
             break;
 
         default:
@@ -409,7 +409,7 @@ void CreateDisplay() {
             panelY = inpLabelY;
             textOffsetX = inpLabelX + 10;
             buttonX = inpLabelX;
-            buttonY = inpLabelY + ((g_state.needTier1Recovery || g_state.needTier2Recovery) ? 160 : 145);
+            buttonY = inpLabelY + panelHeight + 5;
             break;
     }
 
@@ -430,40 +430,14 @@ void CreateDisplay() {
     for(int i = 0; i < 9; i++) {
         string labelName = g_labelName + lineNames[i];
         if(ObjectCreate(0, labelName, OBJ_LABEL, 0, 0, 0)) {
-            // Calculate absolute text positions (always use LEFT_UPPER corner for text)
-            int textX, textY;
+            // Calculate text positions using same corner as panel
+            int textX = textOffsetX;
+            int textY = panelY + 15 + (i * 15);  // Start 15px from top of panel, 15px spacing between lines
 
-            switch(inpLabelCorner) {
-                case CORNER_LEFT_UPPER:
-                    textX = panelX + 10;  // 10px inside panel from left
-                    textY = panelY + 15 + (i * 15);  // Start 15px from top
-                    break;
-
-                case CORNER_LEFT_LOWER:
-                    textX = panelX + 10;  // 10px inside panel from left
-                    textY = panelY - panelHeight + 15 + (i * 15);  // Work upward from bottom
-                    break;
-
-                case CORNER_RIGHT_UPPER:
-                    textX = panelX + 10;  // 10px inside panel from left edge of panel
-                    textY = panelY + 15 + (i * 15);  // Start 15px from top
-                    break;
-
-                case CORNER_RIGHT_LOWER:
-                    textX = panelX + 10;  // 10px inside panel from left edge of panel
-                    textY = panelY - panelHeight + 15 + (i * 15);  // Work upward from bottom
-                    break;
-
-                default:
-                    textX = panelX + 10;
-                    textY = panelY + 15 + (i * 15);
-                    break;
-            }
-
-            // Text labels should always use LEFT_UPPER corner for consistent positioning
+            // Use the same corner as the panel for consistent positioning
             ObjectSetInteger(0, labelName, OBJPROP_XDISTANCE, textX);
             ObjectSetInteger(0, labelName, OBJPROP_YDISTANCE, textY);
-            ObjectSetInteger(0, labelName, OBJPROP_CORNER, CORNER_LEFT_UPPER);  // Fixed corner for text
+            ObjectSetInteger(0, labelName, OBJPROP_CORNER, inpLabelCorner);
             ObjectSetString(0, labelName, OBJPROP_FONT, "Arial");
             ObjectSetInteger(0, labelName, OBJPROP_FONTSIZE, inpFontSize);
             ObjectSetInteger(0, labelName, OBJPROP_COLOR, inpLabelTextColor);
